@@ -2,7 +2,7 @@ import { Node } from "./Node";
 
 export const TreeList = ({ nodes }: Node[]) => {
   return (
-    <ul>
+    <ul className="ml-4">
       {nodes.map((node) => {
         return (
           <li>
