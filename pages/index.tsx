@@ -6,23 +6,26 @@ import { TreeList } from "../components/TreeList";
 
 export default function Home({ nodes }: Node[]) {
   return (
-    <div className={styles.container}>
+    <div className="flex flex-col h-screen justify-center items-center px-2 py-0">
       <Head>
         <title>TreeList demo</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <TreeList nodes={nodes} />
+      <main className="flex flex-col flex-1 pt-20 py-2 min-w-full">
+        <div className="mx-20">
+          <TreeList nodes={nodes} />
+        </div>
       </main>
 
-      <footer className={styles.footer}>
+      <footer className="w-full h-24 border-t border-gray-200 flex justify-center items-center">
         <a
+          className="flex justify-center items-center"
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
+          Powered by <img src="/vercel.svg" alt="Vercel Logo" className="ml-4 h-4" />
         </a>
       </footer>
     </div>
