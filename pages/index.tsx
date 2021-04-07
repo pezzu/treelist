@@ -1,10 +1,18 @@
 import Head from "next/head";
+import { useState } from "react";
+import { nanoid } from "nanoid";
 import styles from "../styles/Home.module.css";
 
 import { Node } from "../components/Node";
 import { TreeList } from "../components/TreeList";
 
-export default function Home({ nodes }: Node[]) {
+export default function Home({ list }) {
+  const [nodes, setNodes] = useState(list);
+
+  const onUpdateNode = (node: Node) => {
+    setNodes([...nodes]);
+  };
+
   return (
     <div className="flex flex-col h-screen justify-center items-center px-2 py-0">
       <Head>
@@ -14,7 +22,13 @@ export default function Home({ nodes }: Node[]) {
 
       <main className="flex flex-col flex-1 pt-20 py-2 min-w-full">
         <div className="mx-20">
-          <TreeList nodes={nodes} />
+          <ul className="ml-4">
+            {nodes.map((node) => (
+              <li key={node.id}>
+                <TreeList root={node} onUpdateNode={onUpdateNode} />
+              </li>
+            ))}
+          </ul>
         </div>
       </main>
 
@@ -33,23 +47,29 @@ export default function Home({ nodes }: Node[]) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const nodes: Node[] = [
+  const list: Node[] = [
     {
+      id: nanoid(),
       name: "parent 1",
     },
     {
+      id: nanoid(),
       name: "parent 2",
       children: [
         {
+          id: nanoid(),
           name: "chlid 1",
         },
         {
+          id: nanoid(),
           name: "child 2",
           children: [
             {
+              id: nanoid(),
               name: "grandchild 1",
             },
             {
+              id: nanoid(),
               name: "grandchild 2",
             },
           ],
@@ -57,9 +77,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       ],
     },
     {
+      id: nanoid(),
       name: "parent 3",
     },
   ];
 
-  return { props: { nodes } };
+  return { props: { list } };
 };
