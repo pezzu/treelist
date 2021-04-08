@@ -1,22 +1,60 @@
 import { SyntheticEvent, useState } from "react";
 import { Node } from "./Node";
 
-const ItemHeader = ({ name }) => {
-  return <div className="hover:bg-gray-100">{name}</div>;
+const ToolBar = ({ onAdd, onEdit, onDelete }) => {
+  return (
+    <div className="ml-3">
+      <button
+        type="button"
+        className="mx-1 px-2 bg-blue-100 hover:bg-blue-300 rounded-full"
+        onClick={onAdd}
+      >
+        A
+      </button>
+      <button
+        type="button"
+        className="mx-1 px-2 bg-blue-100 hover:bg-blue-300 rounded-full"
+        onClick={onEdit}
+      >
+        E
+      </button>
+      <button
+        type="button"
+        className="mx-1 px-2 bg-blue-100 hover:bg-blue-300 rounded-full"
+        onClick={onDelete}
+      >
+        D
+      </button>
+    </div>
+  );
 };
 
-export const TreeList = ({ root, onUpdateNode }) => {
+
+export const TreeList = ({ root, onUpdateNode, deleteNode }) => {
   const [isExpanded, setExpanded] = useState(true);
+  const [isEdit, setIsEdit] = useState(false);
+  const [newName, setNewName] = useState(root.name);
+
   const isExpandable = root.children && root.children.length > 0;
+
 
   const addNode = (e: SyntheticEvent) => {};
 
-  const editNode = (e: SyntheticEvent) => {};
+  const editNode = (e: SyntheticEvent) => {
+    setIsEdit(!isEdit);
+  };
 
-  const deleteNode = (node) => {
-    const newRoot = root;
-    newRoot.children = root.children.filter((child) => child.id !== node.id);
-    onUpdateNode(newRoot);
+  const deleteChild = (node) => {
+    // onUpdateNode({...root, children: root.children.filter((child) => child.id !== node.id)});
+    root.children = root.children.filter((child) => child.id !== node.id);
+    onUpdateNode(root);
+  };
+
+  const saveNode = () => {
+    setIsEdit(false);
+    // onUpdateNode({...root, name: newName});
+    root.name = newName;
+    onUpdateNode(root);
   };
 
   return (
@@ -27,7 +65,12 @@ export const TreeList = ({ root, onUpdateNode }) => {
             {isExpanded ? "-" : "+"}
           </button>
         )}
-        <ItemHeader name={root.name} />
+        {isEdit ? (
+          <input value={newName} onChange={(e) => setNewName(e.target.value)} onBlur={saveNode} />
+        ) : (
+          <div>{root.name}</div>
+        )}
+        <ToolBar onAdd={addNode} onEdit={editNode} onDelete={() => deleteNode(root)} />
       </div>
       {isExpandable && isExpanded && (
         <ul className="ml-4">
@@ -35,30 +78,7 @@ export const TreeList = ({ root, onUpdateNode }) => {
             return (
               <li key={node.id}>
                 <div className="flex">
-                  <TreeList root={node} onUpdateNode={onUpdateNode} />
-                  <div className="ml-3">
-                    <button
-                      type="button"
-                      className="mx-1 px-2 bg-blue-100 hover:bg-blue-300 rounded-full"
-                      onClick={addNode}
-                    >
-                      A
-                    </button>
-                    <button
-                      type="button"
-                      className="mx-1 px-2 bg-blue-100 hover:bg-blue-300 rounded-full"
-                      onClick={editNode}
-                    >
-                      E
-                    </button>
-                    <button
-                      type="button"
-                      className="mx-1 px-2 bg-blue-100 hover:bg-blue-300 rounded-full"
-                      onClick={() => deleteNode(node)}
-                    >
-                      D
-                    </button>
-                  </div>
+                  <TreeList root={node} onUpdateNode={onUpdateNode} deleteNode={deleteChild} />
                 </div>
               </li>
             );
