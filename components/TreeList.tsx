@@ -1,4 +1,5 @@
-import { SyntheticEvent, useState } from "react";
+import { nanoid } from "nanoid";
+import { useState } from "react";
 import { Node } from "./Node";
 
 const ToolBar = ({ onAdd, onEdit, onDelete }) => {
@@ -29,31 +30,38 @@ const ToolBar = ({ onAdd, onEdit, onDelete }) => {
   );
 };
 
-
 export const TreeList = ({ root, onUpdateNode, deleteNode }) => {
   const [isExpanded, setExpanded] = useState(true);
   const [isEdit, setIsEdit] = useState(false);
   const [newName, setNewName] = useState(root.name);
+  const [isAdd, setIsAdd] = useState(false);
 
   const isExpandable = root.children && root.children.length > 0;
 
+  const addNode = () => {
+    setIsAdd(false);
+    if (newName) {
+      const node = {
+        id: nanoid(),
+        name: newName,
+        children: [],
+      };
+      // onUpdateNode({...root, children: [...root.children, node]});
+      root.children = root.children ? [...root.children, node] : [node];
+      onUpdateNode(root);
+    }
+  };
 
-  const addNode = (e: SyntheticEvent) => {};
-
-  const editNode = (e: SyntheticEvent) => {
-    setIsEdit(!isEdit);
+  const editNode = () => {
+    setIsEdit(false);
+    // onUpdateNode({...root, name: newName});
+    root.name = newName;
+    onUpdateNode(root);
   };
 
   const deleteChild = (node) => {
     // onUpdateNode({...root, children: root.children.filter((child) => child.id !== node.id)});
     root.children = root.children.filter((child) => child.id !== node.id);
-    onUpdateNode(root);
-  };
-
-  const saveNode = () => {
-    setIsEdit(false);
-    // onUpdateNode({...root, name: newName});
-    root.name = newName;
     onUpdateNode(root);
   };
 
@@ -66,15 +74,24 @@ export const TreeList = ({ root, onUpdateNode, deleteNode }) => {
           </button>
         )}
         {isEdit ? (
-          <input value={newName} onChange={(e) => setNewName(e.target.value)} onBlur={saveNode} />
+          <input
+            type="text"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onBlur={editNode}
+          />
         ) : (
           <div>{root.name}</div>
         )}
-        <ToolBar onAdd={addNode} onEdit={editNode} onDelete={() => deleteNode(root)} />
+        <ToolBar
+          onAdd={() => setIsAdd(!isAdd)}
+          onEdit={() => setIsEdit(!isEdit)}
+          onDelete={() => deleteNode(root)}
+        />
       </div>
-      {isExpandable && isExpanded && (
+      {((isExpandable && isExpanded) || isAdd) && (
         <ul className="ml-4">
-          {root.children.map((node) => {
+          {root.children?.map((node) => {
             return (
               <li key={node.id}>
                 <div className="flex">
@@ -83,6 +100,11 @@ export const TreeList = ({ root, onUpdateNode, deleteNode }) => {
               </li>
             );
           })}
+          {isAdd && (
+            <li>
+              <input type="text" onChange={(e) => setNewName(e.target.value)} onBlur={addNode} />
+            </li>
+          )}
         </ul>
       )}
     </div>
