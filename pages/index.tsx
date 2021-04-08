@@ -22,13 +22,7 @@ export default function Home({ list }) {
 
       <main className="flex flex-col flex-1 pt-20 py-2 min-w-full">
         <div className="mx-20">
-          <ul className="ml-4">
-            {nodes.map((node) => (
-              <li key={node.id}>
-                <TreeList root={node} onUpdateNode={onUpdateNode} />
-              </li>
-            ))}
-          </ul>
+          <TreeList nodes={nodes} onUpdateNode={onUpdateNode} />
         </div>
       </main>
 

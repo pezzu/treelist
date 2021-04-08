@@ -30,7 +30,7 @@ const ToolBar = ({ onAdd, onEdit, onDelete }) => {
   );
 };
 
-export const TreeList = ({ root, onUpdateNode, deleteNode }) => {
+const Tree = ({ root, onUpdateNode, deleteNode }) => {
   const [isExpanded, setExpanded] = useState(true);
   const [isEdit, setIsEdit] = useState(false);
   const [newName, setNewName] = useState(root.name);
@@ -95,7 +95,7 @@ export const TreeList = ({ root, onUpdateNode, deleteNode }) => {
             return (
               <li key={node.id}>
                 <div className="flex">
-                  <TreeList root={node} onUpdateNode={onUpdateNode} deleteNode={deleteChild} />
+                  <Tree root={node} onUpdateNode={onUpdateNode} deleteNode={deleteChild} />
                 </div>
               </li>
             );
@@ -108,5 +108,23 @@ export const TreeList = ({ root, onUpdateNode, deleteNode }) => {
         </ul>
       )}
     </div>
+  );
+};
+
+export const TreeList = ({ nodes, onUpdateNode }) => {
+  const deleteItem = (node) => {
+    const index = nodes.findIndex((item) => item.id === node.id);
+    nodes.splice(index, 1);
+    onUpdateNode(nodes[0]);
+  };
+
+  return (
+    <ul>
+      {nodes.map((node) => (
+        <li key={node.id}>
+          <Tree root={node} onUpdateNode={onUpdateNode} deleteNode={deleteItem} />
+        </li>
+      ))}
+    </ul>
   );
 };
